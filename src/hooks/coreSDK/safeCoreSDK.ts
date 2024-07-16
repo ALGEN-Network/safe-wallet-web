@@ -2,7 +2,7 @@ import chains from '@/config/chains'
 import type { UndeployedSafe } from '@/features/counterfactual/store/undeployedSafesSlice'
 import { getWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { UncheckedJsonRpcSigner } from '@/utils/providers/UncheckedJsonRpcSigner'
-import { getSafeSingletonDeployment, getSafeL2SingletonDeployment } from '@safe-global/safe-deployments'
+import { getSafeSingletonDeployment, getSafeL2SingletonDeployment } from 'algen-safe-deployments'
 import ExternalStore from '@/services/ExternalStore'
 import { Gnosis_safe__factory } from '@/types/contracts'
 import { invariant } from '@/utils/helpers'
@@ -14,6 +14,7 @@ import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { ethers } from 'ethers'
 import semverSatisfies from 'semver/functions/satisfies'
 import { isValidMasterCopy } from '@/services/contracts/safeContracts'
+import { ContractNetworks } from '@/config/constants'
 
 export const isLegacyVersion = (safeVersion: string): boolean => {
   const LEGACY_VERSION = '<1.3.0'
@@ -100,6 +101,7 @@ export const initSafeSDK = async ({
       ethAdapter: createReadOnlyEthersAdapter(provider),
       isL1SafeSingleton,
       predictedSafe: undeployedSafe.props,
+      contractNetworks: ContractNetworks,
     })
   }
 
@@ -107,6 +109,7 @@ export const initSafeSDK = async ({
     ethAdapter: createReadOnlyEthersAdapter(provider),
     safeAddress: address,
     isL1SafeSingleton,
+    contractNetworks: ContractNetworks,
   })
 }
 

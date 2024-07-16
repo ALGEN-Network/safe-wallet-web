@@ -161,15 +161,18 @@ const ReviewStep = ({ data, onSubmit, onBack, setStep }: StepRenderProps<NewSafe
   }
 
   const createSafe = async () => {
+    console.log('start create new safe')
     if (!wallet || !provider || !chain) return
 
     setIsCreating(true)
-
+    console.log('chainId: ', chain.chainId, LATEST_SAFE_VERSION)
     try {
       const readOnlyFallbackHandlerContract = await getReadOnlyFallbackHandlerContract(
         chain.chainId,
         LATEST_SAFE_VERSION,
       )
+
+      console.log('readOnlyFallbackHandlerContract: ', readOnlyFallbackHandlerContract)
 
       const props: DeploySafeProps = {
         safeAccountConfig: {
@@ -181,6 +184,7 @@ const ReviewStep = ({ data, onSubmit, onBack, setStep }: StepRenderProps<NewSafe
 
       const saltNonce = await getAvailableSaltNonce(provider, { ...props, saltNonce: '0' }, chain.chainId)
       const safeAddress = await computeNewSafeAddress(provider, { ...props, saltNonce }, chain.chainId)
+      console.log('saltNonce: ', saltNonce, 'safeAddress: ', safeAddress)
 
       if (isCounterfactual && payMethod === PayMethod.PayLater) {
         gtmSetSafeAddress(safeAddress)

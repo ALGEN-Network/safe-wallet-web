@@ -10,10 +10,11 @@ import {
 import type { UrlObject } from 'url'
 import { AppRoutes } from '@/config/routes'
 import { SAFE_APPS_EVENTS, trackEvent } from '@/services/analytics'
-import { predictSafeAddress, SafeFactory } from '@safe-global/protocol-kit'
+import { SafeFactory } from '@safe-global/protocol-kit'
 import type Safe from '@safe-global/protocol-kit'
 import type { DeploySafeProps } from '@safe-global/protocol-kit'
 import { createEthersAdapter, isValidSafeVersion } from '@/hooks/coreSDK/safeCoreSDK'
+import { ContractNetworks } from '@/config/constants'
 
 import { backOff } from 'exponential-backoff'
 import { LATEST_SAFE_VERSION } from '@/config/constants'
@@ -33,7 +34,8 @@ const getSafeFactory = async (
     throw new Error('Invalid Safe version')
   }
   const ethAdapter = await createEthersAdapter(ethersProvider)
-  const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion })
+  console.log('contractNetworks: ', ContractNetworks)
+  const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion, contractNetworks: ContractNetworks })
   return safeFactory
 }
 
@@ -59,15 +61,18 @@ export const computeNewSafeAddress = async (
 ): Promise<string> => {
   const ethAdapter = await createEthersAdapter(ethersProvider)
 
-  return predictSafeAddress({
-    ethAdapter,
-    chainId: BigInt(chainId),
-    safeAccountConfig: props.safeAccountConfig,
-    safeDeploymentConfig: {
-      saltNonce: props.saltNonce,
-      safeVersion: LATEST_SAFE_VERSION as SafeVersion,
-    },
-  })
+  const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion: '1.3.0', contractNetworks: ContractNetworks })
+  return safeFactory.predictSafeAddress(props.safeAccountConfig, props.saltNonce)
+
+  // return predictSafeAddress({
+  //   ethAdapter,
+  //   chainId: BigInt(chainId),
+  //   safeAccountConfig: props.safeAccountConfig,
+  //   safeDeploymentConfig: {
+  //     saltNonce: props.saltNonce,
+  //     safeVersion: LATEST_SAFE_VERSION as SafeVersion,
+  //   },
+  // })
 }
 
 /**

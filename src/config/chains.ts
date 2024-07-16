@@ -1,4 +1,3 @@
-import { networks } from '@safe-global/protocol-kit/dist/src/utils/eip-3770/config'
 /**
  * A static shortName<->chainId dictionary
  * E.g.:
@@ -11,9 +10,18 @@ import { networks } from '@safe-global/protocol-kit/dist/src/utils/eip-3770/conf
  */
 type Chains = Record<string, string>
 
-const chains = networks.reduce<Chains>((result, { shortName, chainId }) => {
-  result[shortName] = chainId.toString()
-  return result
-}, {})
+// const chains = networks.reduce<Chains>((result, { shortName, chainId }) => {
+//   result[shortName] = chainId.toString()
+//   return result
+// }, {})
+
+const chains: Record<string, string> = {
+  eth: '1',
+  matic: '137',
+  algen: '8911',
+  algenL2: '8921',
+  algenTest: '8912',
+  algenL2Test: '8922',
+}
 
 export default chains
